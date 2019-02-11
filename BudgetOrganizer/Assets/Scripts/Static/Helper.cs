@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 
+
 public class Helper : MonoBehaviour
 {
     
@@ -35,4 +36,21 @@ public class Helper : MonoBehaviour
             Debug.LogError(string.Format("db path have {0} dots inscead of 1", temp.Length.ToString()));
         }
     }
+}
+
+public class SingleShopData
+{
+    public SingleShopData(string id, string shop, string add1, string add2, string nip) {
+        this.id = id;
+        this.shopName = shop;
+        this.address01 = add1;
+        this.address02 = add2;
+        this.nip = nip;
+    }
+
+    public string id;
+    public string shopName;
+    public string address01;
+    public string address02;
+    public string nip;
 }
