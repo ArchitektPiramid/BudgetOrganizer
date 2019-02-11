@@ -42,7 +42,7 @@ public class SQL : MonoBehaviour {
 	public void CreateSchema() {
 		using (var conn = new SqliteConnection(dbPath)) {
 			conn.Open();
-			using (var cmd = conn.CreateCommand()) {
+			using(var cmd = conn.CreateCommand()) {
 				cmd.CommandType = CommandType.Text;
 				cmd.CommandText = "CREATE TABLE IF NOT EXISTS 'shop' ( " +
 					            	"  'id' INTEGER PRIMARY KEY, " +
@@ -55,8 +55,36 @@ public class SQL : MonoBehaviour {
 				var result = cmd.ExecuteNonQuery();
 				Debug.Log("create schema: " + result);
 			}
+			using(var cmd = conn.CreateCommand()) {
+				cmd.CommandType = CommandType.Text;
+				cmd.CommandText = "CREATE TABLE IF NOT EXISTS 'purchase' ( " +
+					            	"  'id' INTEGER PRIMARY KEY, " +
+									"  'shop_id' FOREIGN KEY (shop_id) REFERENCES parent (id)" +
+					            	"  'cost' FLOAT NOT NULL, " +
+									"  'shop_date' DATE NOT NULL, " +
+					            	");";
+
+				var result = cmd.ExecuteNonQuery();
+				Debug.Log("create schema: " + result);
+			}
 		}
 	}
+
+	public void CreateNewPurchase(string shopKeyId, string cost, string boughtDate) {
+		using(var conn = new SqliteConnection(dbPath)) {
+			conn.Open();
+			using(var cmd = conn.CreateCommand()) {
+				cmd.CommandType = CommandType.Text;
+				cmd.CommandText = "INSERT INTO purchase (shop_id, cost, shop_date) " +
+									"VALUES (@SHOP_ID, @COST, @BOUGHT_DATE);";
+
+				cmd.Parameters.Add(new SqliteParameter { ParameterName = "SHOP_ID", Value = shopKeyId});
+				cmd.Parameters.Add(new SqliteParameter { ParameterName = "COST", Value = cost});
+				cmd.Parameters.Add(new SqliteParameter { ParameterName = "BOUGHT_DATE", Value = boughtDate});
+			}
+		}
+	}
+
 
 	public void CreateNewShop(string shopName, string address01, string address02, string nip) {
 		using (var conn = new SqliteConnection(dbPath)) {
@@ -71,17 +99,11 @@ public class SQL : MonoBehaviour {
 				cmd.Parameters.Add(new SqliteParameter { ParameterName = "ADDRESS02", Value = address02});
 				cmd.Parameters.Add(new SqliteParameter { ParameterName = "NIP", Value = nip});
 
-				// cmd.Parameters.Add(new SqliteParameter {
-				// 	ParameterName = "Name",
-				// 	Value = highScoreName
-				// });
-
-
-					var result = cmd.ExecuteNonQuery();
-					Debug.Log("insert score: " + result);
-				}
+				var result = cmd.ExecuteNonQuery();
+				Debug.Log("insert score: " + result);
 			}
 		}
+	}
 
 
 	public List<SingleShopData> GetAllShopts() {
